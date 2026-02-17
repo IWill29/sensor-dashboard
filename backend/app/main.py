@@ -12,13 +12,11 @@ app = FastAPI(
     description="API for sensor data with sorting and filtering",
 )
 
-# CORS configuration — read trusted origins from ALLOWED_ORIGINS (comma separated).
-# - Dev default: http://localhost:5173
-# - In production set ALLOWED_ORIGINS="https://app.example.com,https://admin.example.com"
+
 _allowed = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173").strip()
 
 if _allowed == "*":
-    cors_origins = ["*"]   # WARNING: do NOT use "*" in production unless intentional
+    cors_origins = ["*"]   
 else:
     cors_origins = [o.strip() for o in _allowed.split(",") if o.strip()]
 
@@ -153,9 +151,6 @@ def get_sensors(
 
 @app.get("/", tags=["Root"])
 def root():
-    """
-    Root endpoint. Provides basic API info and documentation links.
-    """
     return {
         "message": "Welcome to the Sensor Data API! See /docs for interactive documentation or /api/sensors for sensor data."
     }

@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Optional
@@ -10,45 +12,72 @@ app = FastAPI(
     description="API for sensor data with sorting and filtering",
 )
 
+# CORS configuration — read trusted origins from ALLOWED_ORIGINS (comma separated).
+# - Dev default: http://localhost:5173
+# - In production set ALLOWED_ORIGINS="https://app.example.com,https://admin.example.com"
+_allowed = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173").strip()
+
+if _allowed == "*":
+    cors_origins = ["*"]   # WARNING: do NOT use "*" in production unless intentional
+else:
+    cors_origins = [o.strip() for o in _allowed.split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
-    allow_credentials=True,
+    allow_origins=cors_origins,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-
 def filter_by_type(sensor_list, filter_type):
-    # Filtrē sensorus pēc tipa, ja norādīts
+    # Filter sensors by type, if specified
     if filter_type:
         return [s for s in sensor_list if s['type'] == filter_type]
     return sensor_list
 
 def search_by_name(sensor_list, search):
-    # Precīza meklēšana pēc sensora nosaukuma (case-insensitive)
+    # Exact search by sensor name (case-insensitive)
     if search:
         search_lower = search.lower()
-        return [s for s in sensor_list if (s.get('sensor_name') or '').lower() == search_lower]
+        return [s for s in sensor_list if search_lower in (s.get('sensor_name') or '').lower()]
     return sensor_list
 
 def filter_by_metrics(sensor_list, metrics):
-    # Atlasa tikai norādītās metrics kolonnas un sensorus, kuriem ir vismaz viens šāds mērījums
+    """
+    Return a NEW list of sensors where each sensor has 'measurements'
+    filtered according to `metrics`. Do NOT mutate objects from the
+    original `sensor_list` (avoid in‑place changes).
+    """
     if not metrics:
         return sensor_list
+
     requested = [m.strip().lower() for m in metrics.split(",") if m.strip()]
+
     def keep_measurement(key: str) -> bool:
         kl = key.lower()
         for r in requested:
             if r in kl:
                 return True
         return False
+
+    new_list = []
     for s in sensor_list:
-        s['measurements'] = {k: v for k, v in s['measurements'].items() if keep_measurement(k)}
-    return [s for s in sensor_list if s['measurements']]
+        # GUARD: sensor may not have measurements or it may not be a dict
+        measurements = s.get('measurements') if isinstance(s.get('measurements'), dict) else {}
+
+        # filtered measurements for this sensor
+        filtered = {k: v for k, v in measurements.items() if keep_measurement(k)}
+
+        # create a shallow copy of sensor and replace 'measurements' with filtered dict
+        new_sensor = {**s, 'measurements': filtered}
+
+        new_list.append(new_sensor)
+
+    return new_list
 
 def sort_sensors(sensor_list, sort_by, sort_order):
-    # Kārto sensorus pēc izvēlētās kolonnas un virziena
+    # Sort sensors by the selected column and direction
     reverse = sort_order == "desc"
     if sort_by == 'sensor_name':
         nkey = natsort_keygen()
@@ -115,7 +144,7 @@ def get_sensors(
                 sensor_data['measurements'][name_with_unit] = val
         sensor_list.append(sensor_data)
     
-    # Pielieto filtrus un kārtošanu
+    # Apply filters and sorting
     sensor_list = filter_by_type(sensor_list, filter_type)
     sensor_list = search_by_name(sensor_list, search)
     sensor_list = filter_by_metrics(sensor_list, metrics)

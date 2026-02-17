@@ -1,0 +1,311 @@
+@import './base.css';
+
+#app {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-weight: normal;
+}
+
+a,
+.green {
+  text-decoration: none;
+  color: hsla(160, 100%, 37%, 1);
+  transition: 0.4s;
+  padding: 3px;
+}
+
+@media (hover: hover) {
+  a:hover {
+    background-color: hsla(160, 100%, 37%, 0.2);
+  }
+}
+
+@media (min-width: 1024px) {
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #app {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 0 2rem;
+  }
+}
+
+/* ========== SENSOR TABLE ========== */
+
+.sensor-table-container {
+  padding: 2rem;
+  background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 2rem;
+}
+
+.table-header {
+  margin-bottom: 2rem;
+  border-bottom: 3px solid hsla(160, 100%, 37%, 1);
+  padding-bottom: 1rem;
+}
+
+.table-header h2 {
+  margin: 0;
+  color: hsla(160, 100%, 37%, 1);
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.controls-section {
+  background: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.control-group label {
+  font-weight: 600;
+  color: hsla(160, 100%, 37%, 1);
+  font-size: 0.9rem;
+}
+
+.search-input,
+.filter-select {
+  padding: 0.75rem;
+  border: 1px solid #d0d0d0;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  transition: border-color 0.3s ease;
+  font-family: inherit;
+}
+
+.search-input:focus,
+.filter-select:focus {
+  outline: none;
+  border-color: hsla(160, 100%, 37%, 1);
+  box-shadow: 0 0 0 2px hsla(160, 100%, 37%, 0.1);
+}
+
+.toggle-metrics-btn {
+  padding: 0.75rem 1rem;
+  background: hsla(160, 100%, 37%, 1);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease, box-shadow 0.18s ease;
+  font-size: 0.9rem;
+}
+
+/* keyboard-visible focus (fallback :focus + modern :focus-visible) */
+.toggle-metrics-btn:focus,
+.toggle-metrics-btn:focus-visible {
+  outline: none;
+  border-radius: 4px;                       /* match button radius */
+  box-shadow: 0 0 0 4px hsla(160, 100%, 37%, 0.18);
+}
+
+/* keep hover behaviour */
+.toggle-metrics-btn:hover {
+  background: hsla(160, 100%, 37%, 0.8);
+}
+
+.metrics-panel {
+  background: #f0f8f5;
+  border: 2px solid hsla(160, 100%, 37%, 0.3);
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.metrics-panel h3 {
+  margin: 0 0 1rem 0;
+  color: hsla(160, 100%, 37%, 1);
+  font-size: 1rem;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.metric-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  user-select: none;
+}
+
+.metric-checkbox input[type="checkbox"] {
+  cursor: pointer;
+  accent-color: hsla(160, 100%, 37%, 1);
+  width: 18px;
+  height: 18px;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  background: #f9f9f9;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+}
+
+.loading-state .spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #e0e0e0;
+  border-top-color: hsla(160, 100%, 37%, 1);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 1rem;
+}
+
+.loading-state p {
+  margin: 0;
+  color: hsla(160, 100%, 37%, 1);
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.sensor-datatable {
+  font-size: 0.95rem;
+}
+
+.sensor-datatable .p-datatable-thead > tr > th {
+  background: #f0f8f5;
+  color: hsla(160, 100%, 37%, 1);
+  font-weight: 600;
+  border-bottom: 2px solid hsla(160, 100%, 37%, 0.5);
+  padding: 1rem 0.75rem !important;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.sensor-datatable .p-datatable-tbody > tr {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.sensor-datatable .p-datatable-tbody > tr > td {
+  padding: 1rem 0.75rem !important;
+  text-align: center;
+}
+
+.sensor-datatable .p-datatable-tbody > tr > td:first-child {
+  text-align: left;
+  font-weight: 500;
+}
+
+.sensor-datatable .p-datatable-tbody > tr:nth-child(odd) {
+  background-color: #fafafa;
+}
+
+.metric-value {
+  font-weight: 500;
+  color: #333;
+  background: hsla(160, 100%, 37%, 0.05);
+  padding: 0.25rem 0.5rem;
+  border-radius: 3px;
+  display: inline-block;
+  min-width: 70px;
+  font-family: 'Courier New', monospace;
+}
+
+.no-data {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-muted);
+  font-size: 1rem;
+  background: #f5f5f5;
+  border-radius: 6px;
+  margin-top: 1rem;
+}
+
+.record-count {
+  text-align: right;
+  padding: 1rem;
+  background: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-top: none;
+  color: #666;
+  font-size: 0.9rem;
+  border-radius: 0 0 6px 6px;
+  font-weight: 600;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .sensor-table-container {
+    padding: 1rem;
+  }
+
+  .table-header h2 {
+    font-size: 1.4rem;
+  }
+
+  .controls-section {
+    grid-template-columns: 1fr;
+  }
+
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sensor-datatable .p-datatable-thead > tr > th {
+    padding: 0.75rem 0.5rem !important;
+    font-size: 0.85rem;
+  }
+
+  .sensor-datatable .p-datatable-tbody > tr > td {
+    padding: 0.75rem 0.5rem !important;
+    font-size: 0.9rem;
+  }
+}
+
+.error-state {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  background: #fff6f6;
+  border: 1px solid #f5c2c7;
+  color: #611a15;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+.error-state .error-text { font-weight: 600; }
+.retry-btn {
+  background: #c92a2a;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.retry-btn:hover { opacity: 0.95; }
